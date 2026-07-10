@@ -707,9 +707,10 @@ and include_decl : Env.t -> Id.Signature.t -> Include.decl -> Include.decl =
   match decl with
   | ModuleType expr when is_elidable_with_module_type_u expr -> ModuleType expr
   | ModuleType expr -> ModuleType (u_module_type_expr env id expr)
-  | Functor (Path p) -> Functor (Path (module_path env p))
-  | Functor (ModuleType expr) ->
-      Functor (ModuleType (u_module_type_expr env id expr))
+  | Functor ({ target = Path p; _ } as f) ->
+      let target = Path (module_path env p) in
+      Functor { f with target }
+  | Functor mt -> Functor mt
   | Alias p -> Alias (module_path env p)
 
 and module_type : Env.t -> ModuleType.t -> ModuleType.t =

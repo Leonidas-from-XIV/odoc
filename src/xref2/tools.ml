@@ -1813,16 +1813,11 @@ and fragmap :
   let map_include_decl decl subst =
     let open Component.Include in
     match decl with
-    | Alias p ->
+    | Alias p | Functor p ->
         expansion_of_module_path env ~strengthen:true p >>= assert_not_functor
         >>= fun sg ->
         fragmap env subst sg >>= fun sg -> Ok (ModuleType (Signature sg))
-    | Functor (Path p) ->
-        expansion_of_module_path env ~strengthen:true p >>= assert_functor
-        >>= fun sg ->
-        fragmap env subst sg >>= fun sg -> Ok (ModuleType (Signature sg))
-    | Functor (ModuleType mty') | ModuleType mty' ->
-        Ok (ModuleType (With ([ subst ], mty')))
+    | ModuleType mty' -> Ok (ModuleType (With ([ subst ], mty')))
   in
   let map_module m new_subst =
     let open Component.Module in
